@@ -1,12 +1,12 @@
 package cmd
 
 import (
-	"errors"
+	"fmt"
+	"io"
 
+	"github.com/nokamoto/yf/internal/yaml"
 	"github.com/spf13/cobra"
 )
-
-var errNotImplemented = errors.New("not implemented")
 
 func New() *cobra.Command {
 	cmd := cobra.Command{
@@ -14,7 +14,16 @@ func New() *cobra.Command {
 		Short:        "yf is a tool to format YAML files",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return errNotImplemented
+			in, err := io.ReadAll(cmd.InOrStdin())
+			if err != nil {
+				return fmt.Errorf("failed to read input: %w", err)
+			}
+			out, err := yaml.Format(in, 2)
+			if err != nil {
+				return fmt.Errorf("failed to format: %w", err)
+			}
+			cmd.OutOrStdout().Write(out)
+			return nil
 		},
 	}
 	return &cmd
