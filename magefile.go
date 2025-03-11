@@ -21,7 +21,7 @@ func init() {
 
 // All runs all the tasks.
 func All() {
-	mg.SerialDeps(Tidy, Imports, Fmt, Test)
+	mg.SerialDeps(Tidy, Imports, Fmt, Test, Install)
 }
 
 // Tidy runs go mod tidy.
@@ -52,4 +52,8 @@ func Imports() error {
 		return err
 	}
 	return sh.RunV("goimports", "-w", ".")
+}
+
+func Install() error {
+	return sh.RunV("go", "install", "./cmd/yf")
 }
